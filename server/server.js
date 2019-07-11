@@ -61,3 +61,7 @@ app.get( '/images', ( req, res ) => {
           .map( f => file_path + f ); // map with url path
   res.json( files );
 });
+
+app.listen( 8000, _ => {
+  console.log( 'server started. listening to 8000' );
+})
