@@ -1,7 +1,11 @@
 <template>
   <div class="app-container">
-    <SidePanel :images="images" />
-    <Canvas/>
+    <SidePanel
+      :images="images"
+      @clicked-upload-image="uploadFile"
+      @clicked-add-text="addTextToCanvas"
+    />
+    <Canvas :children="children"/>
   </div>
 </template>
 
@@ -22,6 +26,7 @@ export default {
   data() {
     return {
       images: [],
+      children: [],
     };
   },
   created() {
@@ -35,6 +40,30 @@ export default {
       } catch (e) {
         console.error(e);
       }
+    },
+    async uploadFile(file) {
+      const formData = new FormData();
+      formData.append('upload', file);
+      try {
+        await axios.post('http://localhost:8000/uploads',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        this.getImages();
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    addTextToCanvas(text) {
+      const newChild = {
+        type: 'text',
+        position: '',
+        content: text,
+      };
+      this.children = [...this.children, newChild];
     },
   },
 };

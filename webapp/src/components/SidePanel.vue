@@ -2,21 +2,30 @@
   <div class="sidepanel col-sm-2 col-md-2 col-lg-2">
     <div class="form">
       <h3>Form</h3>
-      <input type="file" class="form-control" placeholder="Upload Your Images" name="upload">
-      <button id="submit" class="btn btn-default">upload</button>
-      <!-- Upload Form here -->
+      <input
+        ref="imageUploadField"
+        @change="handleFileToUploadUpdate"
+        type="file"
+        class="form-control"
+        placeholder="Upload Your Images"
+        name="upload"
+      >
+      <button @click="onUploadFileClick" id="submit" class="btn btn-default">upload</button>
     </div>
     <hr />
     <div class="assets">
       <h3>Assets</h3>
       <div class="text">
         <h4>Text</h4>
-        <button id="addText" class="btn btn-default">Add Text</button>
+        <!--TODO: temporary text, make this editable in the canvas-->
+        <input type="text" v-model="textToBeAdded">
+        <button @click="handleAddTextToCanvas" id="addText" class="btn btn-default">
+          Add Text
+        </button>
       </div>
       <div class="image">
         <h4>Images</h4>
         <ul class="list-unstyled">
-          <!-- List of images here -->
            <li v-for="imageUrl in images" :key="imageUrl">
              <img :src="imageUrl" class="img-rounded" />
            </li>
@@ -30,6 +39,24 @@
 export default {
   name: 'side-panel',
   props: ['images'],
+  data() {
+    return {
+      imageToUpload: '',
+      textToBeAdded: 'default text',
+    };
+  },
+  methods: {
+    handleFileToUploadUpdate() {
+      // eslint-disable-next-line prefer-destructuring
+      this.imageToUpload = this.$refs.imageUploadField.files[0];
+    },
+    onUploadFileClick() {
+      this.$emit('clicked-upload-image', this.imageToUpload);
+    },
+    handleAddTextToCanvas() {
+      this.$emit('clicked-add-text', this.textToBeAdded);
+    },
+  },
 };
 </script>
 
@@ -46,10 +73,6 @@ export default {
     .assets {
       width: 100%;
     }
-  }
-
-  #assetText {
-    font-size: 24px;
   }
 
   .assets {
