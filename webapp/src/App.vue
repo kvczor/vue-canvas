@@ -3,13 +3,13 @@
     <SidePanel
       :images="images"
       @clicked-upload-image="uploadFile"
-      @clicked-add-text="addAssetToCanvas"
+      @clicked-add-asset="handleAddChildToCanvas"
     />
     <Canvas
       :children="canvasChildren"
       @move-child="handleUpdateCanvasChild"
-      @clear-canvas="handleEmptyCanvasChildren"
-      @remove-canvas-child="handleRemoveCanvassChild"
+      @clear-canvas="handleClearCanvasChildren"
+      @remove-canvas-child="handleRemoveCanvasChild"
     />
   </div>
 </template>
@@ -77,9 +77,9 @@ export default {
         this.canvasChildren = rehydratedCanvasChildren;
       }
     },
-    addAssetToCanvas(canvasAsset) {
+    handleAddChildToCanvas(canvasChild) {
       const newCanvasChild = {
-        ...canvasAsset,
+        ...canvasChild,
         id: uniqid(),
         position: {
           x: 0,
@@ -94,10 +94,10 @@ export default {
           ? { ...item, ...updatedProperties }
           : item));
     },
-    handleEmptyCanvasChildren() {
+    handleClearCanvasChildren() {
       this.canvasChildren = [];
     },
-    handleRemoveCanvassChild(assetId) {
+    handleRemoveCanvasChild(assetId) {
       this.canvasChildren = this.canvasChildren.filter(({ id }) => id !== assetId);
     },
   },

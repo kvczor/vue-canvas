@@ -1,94 +1,78 @@
-## Instructions
+Vue Canvas by Zbigniew Kubiński
 
-You are required to implement a single page application that allows user to add text and image into canvas.
+## Features:
+- ability to upload an image to the server
+- ability to add a custom text to the canvas
+- ability to add an image to the canvas
+- ability to remove canvas children (one by one or all at once)
+- ability to move around children within the canvas
+- app works on both Chrome and Firefox
+- app rehydrates canvas children from the localstorage
 
-## Features
+## Noteworthy decisions:
+- app built with Vue.js
+- moved bootstrap dependency to package.json
+- changed styling from css into scss and moved it into their respective components
+- separated the app into server and webapp, removed html serving functionality from server.js, there is no reason
+to tie the backend and the frontend.
+- canvas children dragging is build using native javascript methods, no external libraries
+- made sure that function and variable naming is as self-descriptive as possible
+- separated the app into 3 components: App, SidePanel and Canvas:
 
-Below are the basic features for the application:
+    App.vue is responsible for data fetching, data rehydration and data updates (adding, removing and updating assets).
+    Loaded images and canvasChildren can be passed down to any place within the application whenever needed.
+    App.vue is the singe source of truth about the their state.
 
-- user can see the existing images from folder `images` to the images list
-- user can *upload image* to folder `images` and directly added to images list
-- user can *add image / text* from the menu to the canvas
-- user can *move and delete the image / text* inside the canvas
-- the created objects on canvas can be saved and repopulated on refresh browser
+    SidePanel.vue is responsible only for displaying any image list that we pass down to it and reacting to user input
+    (uploading a new image, adding a new asset to the canvas) by executing functions passed down from any parent.
 
-You may refer to Piktochart Editor page of how this test should look like.
+    Canvas.vue is only responsible for displaying any canvas children that we pass down to it and reacting to user input
+    (moving and removing canvas children) by executing functions passed down from any parent.
 
-## Resources
-
-You will be given a HTML and CSS file with simple structure, and a server that allows you to upload and retrieve image. Instruction on how to run the server is included below.
-
-## Requirements
-
-Here are the expected requirements:
-
-- App should have the features listed [above](#features)
-
-- App should work on modern browsers (Chrome / Firefox)
-
-- App logic and data flow are written in a functional and reactive programming concept
-
-    Separate the logic between application data state and template view / user interactions (unidirectional data flow). 
-
-- Use libraries as less as possible,
-
-    If you need to use libraries, we recommend vueJS (or any virtual DOM library), RxJS (or any streams library), Ramda (or any FP library).
-    Other than that, feel free to use other libraries that you're confident of.
-    For moving item inside the canvas, try your best to do it natively.
-
-    _note: use native HTML element `<div>` for editor canvas, not `<canvas>`_
-
-- Code and flow should be properly documented
-
-    Help us understand your flow easier by code comments or a readme file.
-
-- Build automated test for the app
+Potential future improvements:
+- executing the drag function in Canvas.vue on mouse down on the canvas instead of the particular canvas child to prevent
+dragging to suddenly stop when performing it too fast that the mouse is not over our canvas child anymore
+- creating a component for canvas children that would render the appropriate element instead of using v-if inside of Canvas
+as it is now.
+- updating bootstrap version to 4.x.x
 
 
-## How to Submit
+## Installation:
 
-- Zip your working folder with the name `<your name>-piktojstest`
-
-- Exclude `node_modules` folder from the zip
-
-- If you're using github or any code management tools, you can pass us the link
-
-- You have **one day** to complete the test. If you are not able to finish, do send us whatever you have done, we will evaluate accordingly. If you need more time to fulfill all the features and requirements, we can give you **an extra day**
-
-Have fun programming 😊
-
-## How To Install
-
-To set up the environment dependencies ( node version 5++ )
+# Server
 
 ```
-$ npm install
-```
+cd server
 
-To run the node server
+npm install
 
-```
-$ npm run start
-```
-
-Server is listening to port `8000`
-
-### API
-
-#### get uploaded images
+npm run start
 
 ```
-GET /images
-```
 
-#### upload image to server
+# Web App
 
 ```
-POST /uploads
+cd webapp
+
+npm install
 ```
 
-### Note
+### Development build
+```
+npm run serve
 
-_- The name of the file input has to be `upload` as this is what the server will be reading from_
-_- The server only accepts `png` and `jpeg` file format_
-_- You are allowed to edit the server.js file_
+open http://localhost:8080/ in the browser to view the application in development mode
+
+```
+
+### Production build
+```
+npm install -g serve
+
+npm run build
+
+cd dist
+
+serve
+```

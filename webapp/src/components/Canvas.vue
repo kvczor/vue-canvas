@@ -4,24 +4,24 @@
       <div
         v-for="{ id, position, type, content } in children"
         :ref="id"
-        @mousedown="startDrag($event, id)"
-        @mousemove="handleMoveChild($event, id)"
-        @mouseup="stopDrag"
+        @mousedown="handleDraggingStart($event, id)"
+        @mousemove="handleDraggingChild($event, id)"
+        @mouseup="handleDraggingStop"
         :key="id"
         class="item"
         :style="{top: `${position.y}px`, left: `${position.x}px`}"
       >
       <input
-        @click="handleRemoveCancasChild(id)"
-        class="remove-button"
+        @click="handleRemoveCanvasChild(id)"
+        class="btn btn-default remove-button"
         type="button"
-        value="remove"
+        value="Remove"
       >
       <span v-if="type === 'text'">{{content}}</span>
       <img v-if="type === 'image'" :src="content" draggable="false"/>
       </div>
     </div>
-    <input @click="handleClearCanvas" type="button" value="Clear Canvas">
+    <input @click="handleClearCanvas" type="button" class="btn btn-default" value="Clear Canvas">
   </div>
 </template>
 
@@ -37,7 +37,7 @@ export default {
   },
 
   methods: {
-    startDrag(event, id) {
+    handleDraggingStart(event, id) {
       event.preventDefault();
       this.dragging = true;
       this.offset = [
@@ -45,7 +45,7 @@ export default {
         this.$refs[id][0].offsetTop - event.clientY,
       ];
     },
-    handleMoveChild(event, id) {
+    handleDraggingChild(event, id) {
       event.preventDefault();
       if (this.dragging) {
         this.$emit('move-child', id, {
@@ -56,13 +56,13 @@ export default {
         });
       }
     },
-    stopDrag() {
+    handleDraggingStop() {
       this.dragging = false;
     },
     handleClearCanvas() {
       this.$emit('clear-canvas');
     },
-    handleRemoveCancasChild(id) {
+    handleRemoveCanvasChild(id) {
       this.$emit('remove-canvas-child', id);
     },
   },
@@ -99,9 +99,9 @@ export default {
     & .remove-button {
       position: absolute;
       opacity: 0;
-      transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.5s ease-in-out;
       pointer-events: none;
-      bottom: -22px;
+      bottom: -35px;
       left: 0;
       right: 0;
     }
