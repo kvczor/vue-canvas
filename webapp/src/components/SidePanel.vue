@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
   <div class="sidepanel col-sm-2 col-md-2 col-lg-2">
     <div class="form">
@@ -17,17 +18,23 @@
       <h3>Assets</h3>
       <div class="text">
         <h4>Text</h4>
-        <!--TODO: temporary text, make this editable in the canvas-->
-        <input type="text" v-model="textToBeAdded">
-        <button @click="handleAddTextToCanvas" id="addText" class="btn btn-default">
-          Add Text
+        <input
+          @keydown.enter="handleAddToCanvas('text', textToBeAdded)"
+          type="text"
+          v-model="textToBeAdded"
+        >
+        <button
+          @click="handleAddToCanvas('text', textToBeAdded)"
+          id="addText"
+          class="btn btn-default">
+            Add Text
         </button>
       </div>
       <div class="image">
         <h4>Images</h4>
         <ul class="list-unstyled">
            <li v-for="imageUrl in images" :key="imageUrl">
-             <img :src="imageUrl" class="img-rounded" />
+             <img @click="handleAddToCanvas('image', imageUrl)" :src="imageUrl" />
            </li>
         </ul>
       </div>
@@ -53,8 +60,8 @@ export default {
     onUploadFileClick() {
       this.$emit('clicked-upload-image', this.imageToUpload);
     },
-    handleAddTextToCanvas() {
-      this.$emit('clicked-add-text', this.textToBeAdded);
+    handleAddToCanvas(type, content) {
+      this.$emit('clicked-add-text', { type, content });
     },
   },
 };
@@ -90,6 +97,10 @@ export default {
       img {
         width: 100%;
         height: 100%;
+        cursor: pointer;
+        &:hover {
+          border: 2px solid blue;
+        }
       }
     }
   }

@@ -3,9 +3,14 @@
     <SidePanel
       :images="images"
       @clicked-upload-image="uploadFile"
-      @clicked-add-text="addTextToCanvas"
+      @clicked-add-text="addAssetToCanvas"
     />
-    <Canvas :children="children"/>
+    <Canvas
+      :children="canvasChildren"
+      @move-child="handleUpdateCanvasChild"
+      @clear-canvas="handleEmptyCanvasChildren"
+      @remove-canvas-child="handleRemoveCanvassChild"
+    />
   </div>
 </template>
 
@@ -13,6 +18,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import axios from 'axios';
+import uniqid from 'uniqid';
 
 import SidePanel from './components/SidePanel.vue';
 import Canvas from './components/Canvas.vue';
@@ -26,11 +32,19 @@ export default {
   data() {
     return {
       images: [],
-      children: [],
+      canvasChildren: [],
     };
   },
   created() {
     this.getImages();
+  },
+  mounted() {
+    this.rehydrateCanvasChildren();
+  },
+  watch: {
+    canvasChildren(newVal) {
+      localStorage.setItem('canvasChildren', JSON.stringify(newVal));
+    },
   },
   methods: {
     async getImages() {
@@ -57,13 +71,34 @@ export default {
         console.error(e);
       }
     },
-    addTextToCanvas(text) {
-      const newChild = {
-        type: 'text',
-        position: '',
-        content: text,
+    rehydrateCanvasChildren() {
+      const rehydratedCanvasChildren = JSON.parse(localStorage.getItem('canvasChildren'));
+      if (rehydratedCanvasChildren) {
+        this.canvasChildren = rehydratedCanvasChildren;
+      }
+    },
+    addAssetToCanvas(canvasAsset) {
+      const newCanvasChild = {
+        ...canvasAsset,
+        id: uniqid(),
+        position: {
+          x: 0,
+          y: 0,
+        },
       };
-      this.children = [...this.children, newChild];
+      this.canvasChildren = [...this.canvasChildren, newCanvasChild];
+    },
+    handleUpdateCanvasChild(childId, updatedProperties) {
+      this.canvasChildren = this.canvasChildren.map(item => (
+        item.id === childId
+          ? { ...item, ...updatedProperties }
+          : item));
+    },
+    handleEmptyCanvasChildren() {
+      this.canvasChildren = [];
+    },
+    handleRemoveCanvassChild(assetId) {
+      this.canvasChildren = this.canvasChildren.filter(({ id }) => id !== assetId);
     },
   },
 };
