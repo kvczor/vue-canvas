@@ -23,39 +23,28 @@ import uniqid from 'uniqid';
 import SidePanel from './components/SidePanel.vue';
 import Canvas from './components/Canvas.vue';
 
+import { value, watch, onMounted, onCreated } from 'vue-function-api';
+
 export default {
   name: 'app',
   components: {
     SidePanel,
     Canvas,
   },
-  data() {
-    return {
-      images: [],
-      canvasChildren: [],
-    };
-  },
-  created() {
-    this.getImages();
-  },
-  mounted() {
-    this.rehydrateCanvasChildren();
-  },
-  watch: {
-    canvasChildren(newVal) {
-      localStorage.setItem('canvasChildren', JSON.stringify(newVal));
-    },
-  },
-  methods: {
-    async getImages() {
+  setup() {
+    const images = value([]);
+    const canvasChildren = value([]);
+
+    const getImages = async () => {
       try {
-        const { data: images } = await axios.get('http://localhost:8000/images/');
-        this.images = images;
+        const { data } = await axios.get('http://localhost:8000/images/');
+        images.value = data;
       } catch (e) {
         console.error(e);
       }
-    },
-    async uploadFile(file) {
+    };
+
+    const uploadFile = async (file) => {
       const formData = new FormData();
       formData.append('upload', file);
       try {
@@ -66,18 +55,20 @@ export default {
               'Content-Type': 'multipart/form-data',
             },
           });
-        this.getImages();
+        getImages();
       } catch (e) {
         console.error(e);
       }
-    },
-    rehydrateCanvasChildren() {
+    };
+
+    const rehydrateCanvasChildren = () => {
       const rehydratedCanvasChildren = JSON.parse(localStorage.getItem('canvasChildren'));
       if (rehydratedCanvasChildren) {
-        this.canvasChildren = rehydratedCanvasChildren;
+        canvasChildren.value = rehydratedCanvasChildren;
       }
-    },
-    handleAddChildToCanvas(canvasChild) {
+    };
+
+    const handleAddChildToCanvas = (canvasChild) => {
       const newCanvasChild = {
         ...canvasChild,
         id: uniqid(),
@@ -86,21 +77,57 @@ export default {
           y: 0,
         },
       };
-      this.canvasChildren = [...this.canvasChildren, newCanvasChild];
-    },
-    handleUpdateCanvasChild(childId, updatedProperties) {
-      this.canvasChildren = this.canvasChildren.map(item => (
+      canvasChildren.value = [...canvasChildren.value, newCanvasChild];
+    };
+
+    const handleUpdateCanvasChild = (childId, updatedProperties) => {
+      canvasChildren.value = canvasChildren.value.map(item => (
         item.id === childId
           ? { ...item, ...updatedProperties }
           : item));
-    },
-    handleClearCanvasChildren() {
-      this.canvasChildren = [];
-    },
-    handleRemoveCanvasChild(assetId) {
-      this.canvasChildren = this.canvasChildren.filter(({ id }) => id !== assetId);
-    },
+    };
+
+    const handleClearCanvasChildren = () => {
+      canvasChildren.value = [];
+    };
+
+    const handleRemoveCanvasChild = (assetId) => {
+      canvasChildren.value = canvasChildren.value.filter(({ id }) => id !== assetId);
+    };
+
+    onCreated(() => {
+      getImages();
+    });
+
+    onMounted(() => {
+      rehydrateCanvasChildren();
+    });
+
+    watch(
+      () => canvasChildren.value,
+      (newVal) => {
+        console.log(newVal);
+        console.log(newVal.value);
+        localStorage.setItem('canvasChildren', JSON.stringify(newVal));
+      },
+    );
+
+    return {
+      images,
+      canvasChildren,
+      getImages,
+      uploadFile,
+      handleAddChildToCanvas,
+      handleUpdateCanvasChild,
+      handleClearCanvasChildren,
+      handleRemoveCanvasChild,
+    };
   },
+  // watch: {
+  //   canvasChildren(newVal) {
+  //     localStorage.setItem('canvasChildren', JSON.stringify(newVal));
+  //   },
+  // },
 };
 </script>
 
