@@ -31,12 +31,15 @@
             @keydown.enter="handleAddToCanvas('text', textToBeAdded)"
             type="text"
             v-model="textToBeAdded"
+            data-cy="asset-text-input"
           >
           <span class="input-group-btn">
                 <button
                   @click="handleAddToCanvas('text', textToBeAdded)"
                   id="addText"
-                  class="btn btn-default">
+                  class="btn btn-default"
+                  data-cy="add-asset-text-button"
+                >
             Add Text
         </button>
       </span>
@@ -44,7 +47,7 @@
       </div>
       <div class="image">
         <h4>Images</h4>
-        <ul class="list-unstyled">
+        <ul data-cy="image-list" class="list-unstyled">
           <li v-for="imageUrl in images" :key="imageUrl">
             <img @click="handleAddToCanvas('image', imageUrl)" :src="imageUrl"/>
           </li>

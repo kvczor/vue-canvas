@@ -1,6 +1,6 @@
 <template>
   <div class="canvas col-sm-8 col-md-8 col-lg-8">
-    <div ref="canvas" class="block">
+    <div data-cy="canvas" ref="canvas" class="block">
       <div
         v-for="{ id, position, type, content } in children"
         :ref="id"
@@ -21,7 +21,13 @@
       <img v-if="type === 'image'" :src="content" draggable="false"/>
       </div>
     </div>
-    <input @click="handleClearCanvas" type="button" class="btn btn-default" value="Clear Canvas">
+    <input
+      data-cy="clear-canvas-button"
+      @click="handleClearCanvas"
+      type="button"
+      class="btn btn-default"
+      value="Clear Canvas"
+    >
   </div>
 </template>
 

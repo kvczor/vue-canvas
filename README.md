@@ -1,6 +1,6 @@
 Vue Canvas by Zbigniew Kubiński
 
-This app also exists with Vue's new function API plugin on branch "function-api-tests".
+This app also exists with Vue's new function API plugin on branch *"function-api-test"*.
 
 ## Features:
 - ability to upload an image to the server
