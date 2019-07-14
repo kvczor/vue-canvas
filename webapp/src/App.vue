@@ -20,10 +20,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import uniqid from 'uniqid';
 
+import {
+  value, watch, onMounted, onCreated,
+} from 'vue-function-api';
 import SidePanel from './components/SidePanel.vue';
 import Canvas from './components/Canvas.vue';
 
-import { value, watch, onMounted, onCreated } from 'vue-function-api';
 
 export default {
   name: 'app',
@@ -106,10 +108,9 @@ export default {
     watch(
       () => canvasChildren.value,
       (newVal) => {
-        console.log(newVal);
-        console.log(newVal.value);
         localStorage.setItem('canvasChildren', JSON.stringify(newVal));
       },
+      { lazy: true },
     );
 
     return {
@@ -123,11 +124,6 @@ export default {
       handleRemoveCanvasChild,
     };
   },
-  // watch: {
-  //   canvasChildren(newVal) {
-  //     localStorage.setItem('canvasChildren', JSON.stringify(newVal));
-  //   },
-  // },
 };
 </script>
 

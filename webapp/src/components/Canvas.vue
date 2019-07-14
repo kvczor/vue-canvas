@@ -11,14 +11,14 @@
         class="item"
         :style="{top: `${position.y}px`, left: `${position.x}px`}"
       >
-      <input
-        @click="handleRemoveCanvasChild(id)"
-        class="btn btn-default remove-button"
-        type="button"
-        value="Remove"
-      >
-      <span v-if="type === 'text'">{{content}}</span>
-      <img v-if="type === 'image'" :src="content" draggable="false"/>
+        <input
+          @click="handleRemoveCanvasChild(id)"
+          class="btn btn-default remove-button"
+          type="button"
+          value="Remove"
+        >
+        <span v-if="type === 'text'">{{content}}</span>
+        <img v-if="type === 'image'" :src="content" draggable="false"/>
       </div>
     </div>
     <input
@@ -32,45 +32,58 @@
 </template>
 
 <script>
+import { value } from 'vue-function-api';
+
+
 export default {
   name: 'canvas',
   props: ['children'],
-  data() {
-    return {
-      offset: [0, 0],
-      dragging: false,
-    };
-  },
+  setup(props, context) {
+    const offset = value([0, 0]);
+    const dragging = value(false);
 
-  methods: {
-    handleDraggingStart(event, id) {
+    const handleDraggingStart = (event, id) => {
       event.preventDefault();
-      this.dragging = true;
-      this.offset = [
-        this.$refs[id][0].offsetLeft - event.clientX,
-        this.$refs[id][0].offsetTop - event.clientY,
+      dragging.value = true;
+      offset.value = [
+        context.refs[id][0].offsetLeft - event.clientX,
+        context.refs[id][0].offsetTop - event.clientY,
       ];
-    },
-    handleDraggingChild(event, id) {
+    };
+
+    const handleDraggingChild = (event, id) => {
       event.preventDefault();
-      if (this.dragging) {
-        this.$emit('move-child', id, {
+      if (dragging.value) {
+        context.emit('move-child', id, {
           position: {
-            x: (event.clientX + this.offset[0]),
-            y: (event.clientY + this.offset[1]),
+            x: (event.clientX + offset.value[0]),
+            y: (event.clientY + offset.value[1]),
           },
         });
       }
-    },
-    handleDraggingStop() {
-      this.dragging = false;
-    },
-    handleClearCanvas() {
-      this.$emit('clear-canvas');
-    },
-    handleRemoveCanvasChild(id) {
-      this.$emit('remove-canvas-child', id);
-    },
+    };
+
+    const handleDraggingStop = () => {
+      dragging.value = false;
+    };
+
+    const handleClearCanvas = () => {
+      context.emit('clear-canvas');
+    };
+
+    const handleRemoveCanvasChild = (id) => {
+      context.emit('remove-canvas-child', id);
+    };
+
+    return {
+      offset,
+      dragging,
+      handleDraggingStart,
+      handleDraggingChild,
+      handleDraggingStop,
+      handleClearCanvas,
+      handleRemoveCanvasChild,
+    };
   },
 };
 </script>
@@ -80,7 +93,8 @@ export default {
   .canvas {
     .block {
       position: relative;
-      width: 600px; height: 600px;
+      width: 600px;
+      height: 600px;
       margin: 10px;
       border: 1px solid;
       box-shadow: 0px 0px 5px black;
@@ -115,9 +129,10 @@ export default {
     &:hover {
       border-color: blue;
       .remove-button {
-      opacity: 1;
-      pointer-events: all;
-    }}
+        opacity: 1;
+        pointer-events: all;
+      }
+    }
   }
 
   .assetText {

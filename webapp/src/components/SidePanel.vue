@@ -58,25 +58,35 @@
 </template>
 
 <script>
+import { value } from 'vue-function-api';
+
 export default {
   name: 'side-panel',
   props: ['images'],
-  data() {
-    return {
-      imageToUpload: '',
-      textToBeAdded: 'default text',
+  setup(props, context) {
+    const imageToUpload = value('');
+    const textToBeAdded = value('default text');
+
+
+    const handleFileToUploadUpdate = () => {
+      imageToUpload.value = context.refs.imageUploadField.files[0];
     };
-  },
-  methods: {
-    handleFileToUploadUpdate() {
-      this.imageToUpload = this.$refs.imageUploadField.files[0];
-    },
-    onUploadFileClick() {
-      this.$emit('clicked-upload-image', this.imageToUpload);
-    },
-    handleAddToCanvas(type, content) {
-      this.$emit('clicked-add-asset', { type, content });
-    },
+
+    const onUploadFileClick = () => {
+      context.emit('clicked-upload-image', imageToUpload.value);
+    };
+
+    const handleAddToCanvas = (type, content) => {
+      context.emit('clicked-add-asset', { type, content });
+    };
+
+    return {
+      imageToUpload,
+      textToBeAdded,
+      handleFileToUploadUpdate,
+      onUploadFileClick,
+      handleAddToCanvas,
+    };
   },
 };
 </script>
