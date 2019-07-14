@@ -1,5 +1,7 @@
 Vue Canvas by Zbigniew Kubiński
 
+This app also exists with Vue's new function API plugin on branch "function-api-tests".
+
 ## Features:
 - ability to upload an image to the server
 - ability to add a custom text to the canvas
